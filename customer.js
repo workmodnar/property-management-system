@@ -50,6 +50,7 @@ function createBooking(propertyId) {
     ));
 
     if (alreadyRequested) {
+        store.showToast("You have already requested a booking for this property!", "error");
         document.querySelector("#requests").scrollIntoView({ behavior: "smooth" });
         return;
     }
@@ -65,6 +66,7 @@ function createBooking(propertyId) {
 
     store.saveData(appData);
     renderRequests();
+    store.showToast("Booking request submitted successfully!");
     document.querySelector("#requests").scrollIntoView({ behavior: "smooth" });
 }
 

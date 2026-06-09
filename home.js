@@ -73,8 +73,17 @@ function handleSearch(event) {
         ? [...appData.properties]
         : appData.properties.filter((property) => property.type === selectedType);
 
+    if (location) {
+        const query = location.toLowerCase();
+        visibleProperties = visibleProperties.filter((property) => 
+            property.name.toLowerCase().includes(query) ||
+            property.description.toLowerCase().includes(query) ||
+            property.type.toLowerCase().includes(query)
+        );
+    }
+
     document.querySelector("[data-search-message]").textContent = location
-        ? `Showing ${visibleProperties.length} result(s) for ${selectedType === "all" ? "all property types" : selectedType} near ${location}.`
+        ? `Showing ${visibleProperties.length} result(s) for ${selectedType === "all" ? "all property types" : selectedType} matching "${location}".`
         : `Showing ${visibleProperties.length} result(s).`;
 
     renderProperties();
@@ -112,8 +121,40 @@ if (homeRegisterForm) {
             return;
         }
 
+        // Set session registration flag for login page toast
+        sessionStorage.setItem("register_success", "true");
         window.location.href = "login.html";
     });
+}
+
+function checkSessionAndSetupNav() {
+    const session = store.loadSession();
+    if (session) {
+        // Hide the registration section on homepage
+        const registerSection = document.getElementById("register");
+        if (registerSection) {
+            registerSection.style.display = "none";
+        }
+
+        // Setup session navbar links
+        const loginBtn = document.querySelector(".nav-action[href='login.html']");
+        const registerBtn = document.querySelector(".nav-action[href='register.html']");
+
+        if (loginBtn) {
+            loginBtn.textContent = "Dashboard";
+            loginBtn.href = session.role === "admin" ? "admin.html" : "customer.html";
+        }
+
+        if (registerBtn) {
+            registerBtn.textContent = "Logout";
+            registerBtn.href = "#";
+            registerBtn.classList.remove("nav-action--primary");
+            registerBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                store.logout();
+            });
+        }
+    }
 }
 
 renderHomeCopy();
@@ -121,3 +162,4 @@ renderStats();
 renderProperties();
 renderServices();
 renderPropertyTypes();
+checkSessionAndSetupNav();

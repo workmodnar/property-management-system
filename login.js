@@ -7,17 +7,18 @@ const loginError = document.querySelector("[data-login-error]");
 
 store.renderBrand(data);
 
+// Check for registration success toast
+if (sessionStorage.getItem("register_success") === "true") {
+    store.showToast("Account created successfully! Please log in.");
+    sessionStorage.removeItem("register_success");
+}
+
 roleSelect.addEventListener("change", () => {
     adminCodeField.hidden = roleSelect.value !== "admin";
 });
 
 form.addEventListener("submit", (event) => {
     event.preventDefault();
-
-    if (roleSelect.value === "admin" && form.adminCode.value !== store.adminCode) {
-        loginError.textContent = "Invalid admin code. Try admin123.";
-        return;
-    }
 
     const email = form.email.value.trim();
     const password = form.password.value.trim();
@@ -30,7 +31,7 @@ form.addEventListener("submit", (event) => {
 
         const session = {
             id: "admin-1",
-            name: form.name.value.trim() || "Admin",
+            name: "Admin",
             role: "admin"
         };
 

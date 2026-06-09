@@ -11,7 +11,7 @@ form.addEventListener("submit", (event) => {
     const email = form.email.value.trim();
     const password = form.password.value.trim();
     const address = form.address.value.trim();
-    const role = form.role.value;
+    const role = "customer";
 
     if (!name || !email || !password || !address) {
         registerError.textContent = "All fields are required.";
@@ -30,5 +30,6 @@ form.addEventListener("submit", (event) => {
         return;
     }
 
+    sessionStorage.setItem("register_success", "true");
     window.location.href = "login.html";
 });
