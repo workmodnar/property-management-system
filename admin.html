@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | RoomBnB</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="data.js" defer></script>
+    <script src="admin.js" defer></script>
+</head>
+<body>
+    <header class="topbar">
+        <nav class="nav" aria-label="Admin navigation">
+            <a class="brand" href="home.html">
+                <span class="brand-mark">R</span>
+                <span data-site-name>RoomBnB</span>
+            </a>
+            <div class="nav-links">
+                <a href="home.html">Home</a>
+                <a href="#content">Content</a>
+                <a href="#bookings">Bookings</a>
+            </div>
+            <div class="session-actions">
+                <span class="session-pill" data-session-label></span>
+                <button class="nav-action" type="button" data-logout-button>Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="page-shell">
+        <section class="section dashboard-hero">
+            <div class="section-heading">
+                <h2>Admin dashboard</h2>
+                <p>Modify homepage content, properties, stats, services, and review customer booking requests.</p>
+            </div>
+        </section>
+
+        <section class="section admin-section" id="content">
+            <div class="section-heading">
+                <h2>Update website content</h2>
+                <p>Changes are saved in this browser and reflected on the homepage.</p>
+            </div>
+
+            <div class="admin-grid">
+                <form class="admin-card" data-site-form>
+                    <h3>Homepage copy</h3>
+                    <label>
+                        Site name
+                        <input name="siteName" type="text" required>
+                    </label>
+                    <label>
+                        Hero eyebrow
+                        <input name="heroEyebrow" type="text" required>
+                    </label>
+                    <label>
+                        Hero title
+                        <input name="heroTitle" type="text" required>
+                    </label>
+                    <label>
+                        Hero description
+                        <textarea name="heroDescription" rows="3" required></textarea>
+                    </label>
+                    <button type="submit">Save copy</button>
+                </form>
+
+                <form class="admin-card" data-property-form>
+                    <h3>Add or edit property</h3>
+                    <input name="id" type="hidden">
+                    <label>
+                        Property name
+                        <input name="name" type="text" required>
+                    </label>
+                    <label>
+                        Type
+                        <input name="type" type="text" required>
+                    </label>
+                    <label>
+                        Description
+                        <textarea name="description" rows="3" required></textarea>
+                    </label>
+                    <div class="form-row">
+                        <label>
+                            Price per night
+                            <input name="price" type="number" min="1" required>
+                        </label>
+                        <label>
+                            Rating
+                            <input name="rating" type="number" min="1" max="5" step="0.01" required>
+                        </label>
+                    </div>
+                    <button type="submit">Save property</button>
+                </form>
+
+                <form class="admin-card" data-stat-form>
+                    <h3>Add or edit stat</h3>
+                    <input name="id" type="hidden">
+                    <label>
+                        Value
+                        <input name="value" type="text" required>
+                    </label>
+                    <label>
+                        Label
+                        <input name="label" type="text" required>
+                    </label>
+                    <button type="submit">Save stat</button>
+                </form>
+
+                <form class="admin-card" data-service-form>
+                    <h3>Add or edit service</h3>
+                    <input name="id" type="hidden">
+                    <label>
+                        Service title
+                        <input name="title" type="text" required>
+                    </label>
+                    <label>
+                        Description
+                        <textarea name="description" rows="3" required></textarea>
+                    </label>
+                    <button type="submit">Save service</button>
+                </form>
+            </div>
+
+            <div class="admin-bookings">
+                <div class="section-heading compact-heading">
+                    <h2>Current homepage items</h2>
+                    <p>Select an item to load it into the matching form above.</p>
+                </div>
+                <div class="admin-lists">
+                    <div class="admin-list">
+                        <h3>Properties</h3>
+                        <div data-admin-properties></div>
+                    </div>
+                    <div class="admin-list">
+                        <h3>Stats</h3>
+                        <div data-admin-stats></div>
+                    </div>
+                    <div class="admin-list">
+                        <h3>Services</h3>
+                        <div data-admin-services></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="bookings">
+            <div class="section-heading">
+                <h2>Booking requests</h2>
+                <p>Requests submitted from the customer dashboard.</p>
+            </div>
+            <div class="request-list" data-admin-requests></div>
+        </section>
+    </main>
+</body>
+</html>

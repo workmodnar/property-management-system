@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard | RoomBnB</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="data.js" defer></script>
+    <script src="customer.js" defer></script>
+</head>
+<body>
+    <header class="topbar">
+        <nav class="nav" aria-label="Customer navigation">
+            <a class="brand" href="home.html">
+                <span class="brand-mark">R</span>
+                <span data-site-name>RoomBnB</span>
+            </a>
+            <div class="nav-links">
+                <a href="home.html">Home</a>
+                <a href="#properties">Properties</a>
+                <a href="#requests">My requests</a>
+            </div>
+            <div class="session-actions">
+                <span class="session-pill" data-session-label></span>
+                <button class="nav-action" type="button" data-logout-button>Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="page-shell">
+        <section class="section dashboard-hero">
+            <div class="section-heading">
+                <h2>Customer dashboard</h2>
+                <p>Browse available properties and send booking requests to the admin.</p>
+            </div>
+        </section>
+
+        <section class="section" id="properties">
+            <div class="section-heading">
+                <h2>Available properties</h2>
+                <p>Pick a managed stay and request it in one click.</p>
+            </div>
+            <div class="property-grid" data-property-list></div>
+        </section>
+
+        <section class="section dashboard-section" id="requests">
+            <div class="section-heading">
+                <h2>My booking requests</h2>
+                <p>Your submitted requests appear here.</p>
+            </div>
+            <div class="request-list" data-customer-requests></div>
+        </section>
+    </main>
+</body>
+</html>

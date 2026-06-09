@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoomBnB | Book Unique Stays</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="data.js" defer></script>
+    <script src="home.js" defer></script>
+</head>
+<body>
+    <header class="topbar">
+        <nav class="nav" aria-label="Main navigation">
+            <a class="brand" href="home.html">
+                <span class="brand-mark">R</span>
+                <span data-site-name>RoomBnB</span>
+            </a>
+            <div class="nav-links">
+                <a href="#stays">Stays</a>
+                <a href="#services">Guest experience</a>
+                <a href="#owners">List your place</a>
+            </div>
+            <a class="nav-action" href="login.html">Login</a>
+            <a class="nav-action nav-action--primary" href="register.html">Register</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-inner">
+            <div class="hero-copy">
+                <span class="eyebrow" data-hero-eyebrow>Book stays that feel like home</span>
+                <h1 data-hero-title>Find your next perfect stay.</h1>
+                <p data-hero-description>RoomBnB helps travelers browse comfortable homes, compare guest-ready stays, and request bookings with a smooth Airbnb-style experience.</p>
+            </div>
+
+            <form class="search-panel" data-search-form>
+                <label class="search-field">
+                    <span>Location</span>
+                    <input name="location" type="text" placeholder="Where are you going?">
+                </label>
+                <label class="search-field">
+                    <span>Property type</span>
+                    <select name="propertyType" data-property-type-filter></select>
+                </label>
+                <label class="search-field">
+                    <span>Guests</span>
+                    <input name="goal" type="text" placeholder="Add guests">
+                </label>
+                <button class="search-button" type="submit">Find stays</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="section dashboard-section" id="register">
+        <div class="section-heading">
+            <h2>Create an account</h2>
+            <p>Register to start booking your perfect stay.</p>
+        </div>
+        <form class="register-card" data-home-register-form>
+            <label>
+                Full name
+                <input name="name" type="text" placeholder="Enter your full name" required>
+            </label>
+            <label>
+                Email
+                <input name="email" type="email" placeholder="Enter your email" required>
+            </label>
+            <label>
+                Address
+                <input name="address" type="text" placeholder="Enter your address" required>
+            </label>
+            <label>
+                Password
+                <input name="password" type="password" placeholder="Create a password" required minlength="6">
+            </label>
+            <p class="login-error" data-home-register-error></p>
+            <button type="submit" class="register-submit">Register now</button>
+        </form>
+    </section>
+
+    <main>
+        <section class="section">
+            <div class="stats-band" data-stats-list></div>
+        </section>
+
+        <section class="section" id="stays">
+            <div class="section-heading">
+                <h2 data-properties-heading>Featured stays</h2>
+                <p data-properties-description>Browse curated homes with transparent pricing, reliable hosts, and guest-ready service from check-in to checkout.</p>
+            </div>
+            <p class="status-message" data-search-message></p>
+            <div class="property-grid" data-property-list></div>
+        </section>
+
+        <section class="section features" id="services">
+            <div class="feature-list" data-service-list></div>
+
+            <div class="owner-panel" id="owners">
+                <h2 data-owner-title>Have a place guests would love?</h2>
+                <p data-owner-description>RoomBnB also helps hosts list, manage, and improve their properties, while keeping the guest booking experience simple and trustworthy.</p>
+                <div class="owner-actions">
+                    <a class="button-primary" href="login.html">Start managing</a>
+                    <a class="button-secondary" href="#stays">View properties</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer data-footer-text>RoomBnB. Built for travelers, hosts, and memorable stays.</footer>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | RoomBnB</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="data.js" defer></script>
+    <script src="login.js" defer></script>
+</head>
+<body>
+    <main class="login-screen login-page">
+        <form class="login-card" data-login-form>
+            <a class="brand login-brand" href="home.html">
+                <span class="brand-mark">R</span>
+                <span data-site-name>RoomBnB</span>
+            </a>
+            <div>
+                <h1>Sign in to continue</h1>
+                <p>Choose customer or admin to open the correct workspace.</p>
+            </div>
+            <label>
+                Full name
+                <input name="name" type="text" placeholder="Enter your name">
+            </label>
+            <label>
+                Email
+                <input name="email" type="email" placeholder="Enter your email" required>
+            </label>
+            <label>
+                Password
+                <input name="password" type="password" placeholder="Enter your password" required>
+            </label>
+            <label>
+                Role
+                <select name="role" required>
+                    <option value="customer">Customer</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </label>
+            <label data-admin-code-field hidden>
+                Admin code
+                <input name="adminCode" type="password" placeholder="Use admin123">
+            </label>
+            <p class="login-error" data-login-error></p>
+            <button type="submit">Login</button>
+            <a class="small-link" href="home.html">Back to homepage</a>
+            <a class="small-link register-link" href="register.html">New consumer? Register here</a>
+        </form>
+    </main>
+</body>
+</html>
