@@ -6,50 +6,99 @@
     <title>Customer Dashboard | RoomBnB</title>
     <link rel="stylesheet" href="style.css">
     <script src="data.js" defer></script>
-    <script src="customer.js" defer></script>
+    <script src="app.js" defer></script>
 </head>
 <body>
+    <!-- Shared Topbar Header -->
     <header class="topbar">
-        <nav class="nav" aria-label="Customer navigation">
-            <a class="brand" href="home.html">
+        <nav class="nav" aria-label="Main navigation">
+            <a class="brand" href="index.html">
                 <span class="brand-mark">R</span>
                 <span data-site-name>RoomBnB</span>
             </a>
-            <div class="nav-links">
-                <a href="home.html">Home</a>
-                <a href="#properties">Properties</a>
-                <a href="#requests">My requests</a>
-            </div>
-            <div class="session-actions">
-                <span class="session-pill" data-session-label></span>
-                <button class="nav-action" type="button" data-logout-button>Logout</button>
-            </div>
+            <!-- Dynamic Navigation Links Slot -->
+            <div class="nav-links" id="dynamic-nav-links"></div>
+            <!-- Dynamic Session Actions Slot -->
+            <div class="session-actions" id="dynamic-session-actions"></div>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Open navigation menu">☰</button>
         </nav>
     </header>
 
-    <main class="page-shell">
-        <section class="section dashboard-hero">
-            <div class="section-heading">
-                <h2>Customer dashboard</h2>
-                <p>Browse available properties and send booking requests to the admin.</p>
-            </div>
-        </section>
+    <!-- Mobile Navigation Drawer -->
+    <dialog id="mobile-nav-dialog" class="mobile-nav-dialog">
+        <div class="mobile-nav-header">
+            <a class="brand" href="index.html">
+                <span class="brand-mark">R</span>
+                <span data-site-name>RoomBnB</span>
+            </a>
+            <button class="modal-close-btn" id="mobile-nav-close">&times;</button>
+        </div>
+        <div class="mobile-nav-body" id="mobile-nav-links"></div>
+        <div class="mobile-nav-actions" id="mobile-nav-actions"></div>
+    </dialog>
 
-        <section class="section" id="properties">
-            <div class="section-heading">
-                <h2>Available properties</h2>
-                <p>Pick a managed stay and request it in one click.</p>
-            </div>
-            <div class="property-grid" data-property-list></div>
-        </section>
+    <!-- CUSTOMER VIEW -->
+    <div id="customer-view" class="page-shell">
+        <main>
+            <section class="section dashboard-hero">
+                <div class="section-heading">
+                    <h2>Customer dashboard</h2>
+                    <p>Browse available properties and send booking requests to the admin.</p>
+                </div>
+            </section>
 
-        <section class="section dashboard-section" id="requests">
-            <div class="section-heading">
-                <h2>My booking requests</h2>
-                <p>Your submitted requests appear here.</p>
+            <section class="section" id="customer-properties">
+                <div class="section-heading">
+                    <h2>Available properties</h2>
+                    <p>Pick a managed stay and request it in one click.</p>
+                </div>
+                <div class="property-grid" data-property-list></div>
+            </section>
+
+            <section class="section dashboard-section" id="requests">
+                <div class="section-heading">
+                    <h2>My booking requests</h2>
+                    <p>Your submitted requests appear here.</p>
+                </div>
+                <div class="request-list" data-customer-requests></div>
+            </section>
+        </main>
+        <footer data-footer-text>RoomBnB. Built for travelers, hosts, and memorable stays.</footer>
+    </div>
+
+    <!-- HTML5 Dialog Modal: Property Details -->
+    <dialog id="property-details-modal" class="custom-modal">
+        <div class="modal-header">
+            <h2 id="modal-prop-title">Property Details</h2>
+            <button class="modal-close-btn" data-close-modal="property-details-modal">&times;</button>
+        </div>
+        <div class="modal-body" id="modal-prop-body">
+            <!-- Dynamic content loaded via JS -->
+        </div>
+        <div class="modal-footer" id="modal-prop-footer">
+            <!-- CTA buttons -->
+        </div>
+    </dialog>
+
+    <!-- HTML5 Drag & Drop Favorites Drawer -->
+    <div id="favorites-drawer" class="favorites-drawer">
+        <div class="favorites-header" id="favorites-header">
+            <div class="favorites-title">
+                <span>Favorites & Compare</span>
+                <span class="favorites-count" id="favorites-count">0</span>
             </div>
-            <div class="request-list" data-customer-requests></div>
-        </section>
-    </main>
+            <button class="favorites-toggle" id="favorites-toggle">Show</button>
+        </div>
+        <div class="favorites-body">
+            <div class="favorites-drop-zone" id="favorites-drop-zone">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                <strong>Drag Stays Here</strong>
+                <p>Drop a stay to add to favorites</p>
+            </div>
+            <div class="favorites-list" id="favorites-list">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
 </body>
 </html>

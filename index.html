@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoomBnB | Book Unique Stays</title>
+    <link class="page-css" rel="stylesheet" href="style.css">
+    <script src="data.js" defer></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <!-- Shared Topbar Header -->
+    <header class="topbar">
+        <nav class="nav" aria-label="Main navigation">
+            <a class="brand" href="index.html">
+                <span class="brand-mark">R</span>
+                <span data-site-name>RoomBnB</span>
+            </a>
+            <!-- Dynamic Navigation Links Slot -->
+            <div class="nav-links" id="dynamic-nav-links"></div>
+            <!-- Dynamic Session Actions Slot -->
+            <div class="session-actions" id="dynamic-session-actions"></div>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Open navigation menu">☰</button>
+        </nav>
+    </header>
+
+    <!-- Mobile Navigation Drawer -->
+    <dialog id="mobile-nav-dialog" class="mobile-nav-dialog">
+        <div class="mobile-nav-header">
+            <a class="brand" href="index.html">
+                <span class="brand-mark">R</span>
+                <span data-site-name>RoomBnB</span>
+            </a>
+            <button class="modal-close-btn" id="mobile-nav-close">&times;</button>
+        </div>
+        <div class="mobile-nav-body" id="mobile-nav-links"></div>
+        <div class="mobile-nav-actions" id="mobile-nav-actions"></div>
+    </dialog>
+
+    <!-- GUEST HOMEPAGE VIEW -->
+    <div id="home-view">
+        <section class="hero">
+            <div class="hero-inner">
+                <div class="hero-copy">
+                    <span class="eyebrow" data-hero-eyebrow>Book stays that feel like home</span>
+                    <h1 data-hero-title>Find your next perfect stay.</h1>
+                    <p data-hero-description>RoomBnB helps travelers browse comfortable homes, compare guest-ready stays, and request bookings with a smooth Airbnb-style experience.</p>
+                </div>
+
+                <form class="search-panel" data-search-form>
+                    <label class="search-field">
+                        <span>Location</span>
+                        <div class="location-input-wrapper">
+                            <input name="location" type="text" placeholder="Where are you going?">
+                            <button type="button" class="geo-btn" id="geo-btn" title="Use current location" aria-label="Use current location">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+                            </button>
+                        </div>
+                    </label>
+                    <label class="search-field">
+                        <span>Property type</span>
+                        <select name="propertyType" data-property-type-filter></select>
+                    </label>
+                    <label class="search-field">
+                        <span>Guests</span>
+                        <input name="guests" type="text" placeholder="Add guests">
+                    </label>
+                    <button class="search-button" type="submit">Find stays</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Inline registration for guest page (hidden when logged in) -->
+        <section class="section dashboard-section" id="register">
+            <div class="section-heading">
+                <h2>Create an account</h2>
+                <p>Register to start booking your perfect stay.</p>
+            </div>
+            <form class="register-card" data-home-register-form>
+                <label class="register-field">
+                    Full name
+                    <input name="name" type="text" placeholder="Enter your full name" required>
+                </label>
+                <label class="register-field">
+                    Email
+                    <input name="email" type="email" placeholder="Enter your email" required>
+                </label>
+                <label class="register-field">
+                    Address
+                    <input name="address" type="text" placeholder="Enter your address" required>
+                </label>
+                <label class="register-field">
+                    Password
+                    <input name="password" type="password" placeholder="Create a password" required minlength="6">
+                </label>
+                <p class="login-error" data-home-register-error></p>
+                <button type="submit" class="register-submit">Register now</button>
+            </form>
+        </section>
+
+        <main>
+            <section class="section">
+                <div class="stats-band" data-stats-list></div>
+            </section>
+
+            <section class="section" id="stays">
+                <div class="section-heading">
+                    <h2 data-properties-heading>Featured stays</h2>
+                    <p data-properties-description>Browse curated homes with transparent pricing, reliable hosts, and guest-ready service from check-in to checkout.</p>
+                </div>
+                <p class="status-message" data-search-message></p>
+                <div class="property-grid" data-property-list></div>
+            </section>
+
+            <section class="section features" id="services">
+                <div class="feature-list" data-service-list></div>
+
+                <div class="owner-panel" id="owners">
+                    <h2 data-owner-title>Have a place guests would love?</h2>
+                    <p data-owner-description>RoomBnB also helps hosts list, manage, and improve their properties, while keeping the guest booking experience simple and trustworthy.</p>
+                    <div class="owner-actions">
+                        <a class="button-primary" href="login.html">Start managing</a>
+                        <a class="button-secondary" href="#stays">View properties</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer data-footer-text>RoomBnB. Built for travelers, hosts, and memorable stays.</footer>
+    </div>
+
+    <!-- HTML5 Dialog Modal: Property Details -->
+    <dialog id="property-details-modal" class="custom-modal">
+        <div class="modal-header">
+            <h2 id="modal-prop-title">Property Details</h2>
+            <button class="modal-close-btn" data-close-modal="property-details-modal">&times;</button>
+        </div>
+        <div class="modal-body" id="modal-prop-body">
+            <!-- Dynamic content loaded via JS -->
+        </div>
+        <div class="modal-footer" id="modal-prop-footer">
+            <!-- CTA buttons -->
+        </div>
+    </dialog>
+
+    <!-- HTML5 Drag & Drop Favorites Drawer -->
+    <div id="favorites-drawer" class="favorites-drawer">
+        <div class="favorites-header" id="favorites-header">
+            <div class="favorites-title">
+                <span>Favorites & Compare</span>
+                <span class="favorites-count" id="favorites-count">0</span>
+            </div>
+            <button class="favorites-toggle" id="favorites-toggle">Show</button>
+        </div>
+        <div class="favorites-body">
+            <div class="favorites-drop-zone" id="favorites-drop-zone">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                <strong>Drag Stays Here</strong>
+                <p>Drop a stay to add to favorites</p>
+            </div>
+            <div class="favorites-list" id="favorites-list">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>

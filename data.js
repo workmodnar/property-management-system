@@ -98,6 +98,7 @@ const RoomBnbStore = {
     dataKey: "roombnb-homepage-data",
     sessionKey: "roombnb-session",
     usersKey: "roombnb-users",
+    favoritesKey: "roombnb-favorites",
     adminCode: "admin123",
 
     clone(value) {
@@ -137,6 +138,11 @@ const RoomBnbStore = {
 
     saveData(data) {
         localStorage.setItem(this.dataKey, JSON.stringify(data));
+    },
+
+    resetData() {
+        localStorage.removeItem(this.dataKey);
+        localStorage.removeItem(this.favoritesKey);
     },
 
     loadUsers() {
@@ -195,6 +201,36 @@ const RoomBnbStore = {
 
     clearSession() {
         localStorage.removeItem(this.sessionKey);
+    },
+
+    loadFavorites() {
+        const saved = localStorage.getItem(this.favoritesKey);
+        if (!saved) return [];
+        try {
+            return JSON.parse(saved);
+        } catch {
+            return [];
+        }
+    },
+
+    saveFavorites(favorites) {
+        localStorage.setItem(this.favoritesKey, JSON.stringify(favorites));
+    },
+
+    addFavorite(id) {
+        const favorites = this.loadFavorites();
+        if (!favorites.includes(id)) {
+            favorites.push(id);
+            this.saveFavorites(favorites);
+            return true;
+        }
+        return false;
+    },
+
+    removeFavorite(id) {
+        let favorites = this.loadFavorites();
+        favorites = favorites.filter(favId => favId !== id);
+        this.saveFavorites(favorites);
     },
 
     createId(prefix) {

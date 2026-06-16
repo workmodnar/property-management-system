@@ -6,12 +6,12 @@
     <title>Login | RoomBnB</title>
     <link rel="stylesheet" href="style.css">
     <script src="data.js" defer></script>
-    <script src="login.js" defer></script>
+    <script src="app.js" defer></script>
 </head>
 <body>
-    <main class="login-screen login-page">
+    <div id="login-view" class="login-screen">
         <form class="login-card" data-login-form>
-            <a class="brand login-brand" href="home.html">
+            <a class="brand login-brand" href="index.html">
                 <span class="brand-mark">R</span>
                 <span data-site-name>RoomBnB</span>
             </a>
@@ -40,9 +40,9 @@
             </label>
             <p class="login-error" data-login-error></p>
             <button type="submit">Login</button>
-            <a class="small-link" href="home.html">Back to homepage</a>
+            <a class="small-link" href="index.html">Back to homepage</a>
             <a class="small-link register-link" href="register.html">New consumer? Register here</a>
         </form>
-    </main>
+    </div>
 </body>
 </html>
