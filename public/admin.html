@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | RoomBnB</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/api.js?v=1.0.1" defer></script>
+    <script src="js/main.js?v=1.0.1" defer></script>
+    <script src="js/admin.js?v=1.0.1" defer></script>
+    <script src="js/router.js?v=1.0.1" defer></script>
+</head>
+<body>
+    <!-- Shared Topbar Header -->
+    <header class="topbar">
+        <nav class="nav" aria-label="Main navigation">
+            <a class="brand" href="index.html">
+                <span class="brand-mark">R</span>
+                <span data-site-name>RoomBnB</span>
+            </a>
+            <!-- Dynamic Navigation Links Slot -->
+            <div class="nav-links" id="dynamic-nav-links"></div>
+            <!-- Dynamic Session Actions Slot -->
+            <div class="session-actions" id="dynamic-session-actions"></div>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Open navigation menu">☰</button>
+        </nav>
+    </header>
+
+    <!-- Mobile Navigation Drawer -->
+    <dialog id="mobile-nav-dialog" class="mobile-nav-dialog">
+        <div class="mobile-nav-header">
+            <a class="brand" href="index.html">
+                <span class="brand-mark">R</span>
+                <span data-site-name>RoomBnB</span>
+            </a>
+            <button class="modal-close-btn" id="mobile-nav-close">&times;</button>
+        </div>
+        <div class="mobile-nav-body" id="mobile-nav-links"></div>
+        <div class="mobile-nav-actions" id="mobile-nav-actions"></div>
+    </dialog>
+
+    <!-- ADMIN VIEW -->
+    <div id="admin-view" class="page-shell">
+        <div class="dashboard-wrapper">
+            <!-- Sidebar Navigation Tabs -->
+            <aside class="sidebar-menu">
+                <div style="margin-bottom:16px; padding:0 8px;">
+                    <h3 style="font-size:1.15rem; font-weight:900;">Admin Workspace</h3>
+                    <p style="font-size:0.8rem; color:var(--text-muted);">Configure copy & manage users</p>
+                </div>
+                <div class="menu-item active" data-tab-target="admin-analytics">
+                    <span style="font-size:1.15rem;">📊</span> Analytics Reports
+                </div>
+                <div class="menu-item" data-tab-target="admin-copy">
+                    <span style="font-size:1.15rem;">📝</span> Site Copy & Stats
+                </div>
+                <div class="menu-item" data-tab-target="admin-properties">
+                    <span style="font-size:1.15rem;">🏡</span> Stays Catalog
+                </div>
+                <div class="menu-item" data-tab-target="admin-bookings">
+                    <span style="font-size:1.15rem;">📋</span> Platform Bookings
+                </div>
+                <div class="menu-item" data-tab-target="admin-users">
+                    <span style="font-size:1.15rem;">👤</span> User Accounts
+                </div>
+                <div class="menu-item" data-tab-target="admin-coupons">
+                    <span style="font-size:1.15rem;">🎟️</span> Coupons Manager
+                </div>
+                <div class="menu-item" data-tab-target="admin-tickets">
+                    <span style="font-size:1.15rem;">🛠️</span> Disputes & Support
+                </div>
+                <div class="menu-item" data-tab-target="admin-cms">
+                    <span style="font-size:1.15rem;">⚙️</span> CMS Settings
+                </div>
+                <div class="menu-item" data-tab-target="admin-reviews">
+                    <span style="font-size:1.15rem;">⚠️</span> Reported Reviews
+                </div>
+            </aside>
+
+            <!-- Dashboard Content Panels -->
+            <main class="dashboard-content-pane">
+                
+                <!-- 6. ANALYTICS & REPORTS (Active by default) -->
+                <section class="dashboard-pane active" id="admin-analytics-pane">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+                        <div>
+                            <h2 style="font-weight:900; font-size:1.85rem;">Platform Analytics</h2>
+                            <p style="color:var(--text-muted); font-size:0.95rem;">Monitor stays, users metrics, platform revenue, and occupancies.</p>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" class="mini-button" id="export-bookings-csv-btn">Export Bookings CSV 📄</button>
+                            <button type="button" class="mini-button" id="print-analytics-report-btn">Print Report 🖨️</button>
+                        </div>
+                    </div>
+
+                    <!-- Top level stats cards -->
+                    <div class="analytics-grid" id="admin-analytics-stats-grid" style="margin-bottom: 20px;">
+                        <div class="analytics-card"><h4>Total Platform Users</h4><span id="admin-stat-total-users">0</span></div>
+                        <div class="analytics-card"><h4>Stays Listed</h4><span id="admin-stat-total-properties">0</span></div>
+                        <div class="analytics-card"><h4>Completed Bookings</h4><span id="admin-stat-total-bookings">0</span></div>
+                        <div class="analytics-card"><h4>Gross Revenue</h4><span id="admin-stat-total-revenue">$0</span></div>
+                    </div>
+
+                    <!-- SVG Charts -->
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:20px; align-items:stretch; margin-bottom: 20px;">
+                        <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:12px;">
+                            <h3 style="font-weight:800; font-size:1.25rem;">Monthly Bookings Count</h3>
+                            <div id="monthly-bookings-chart-container" style="flex:1; height:260px; min-height:260px; position:relative; width:100%;">
+                                <!-- Rendered dynamically via SVG -->
+                            </div>
+                        </div>
+                        <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:12px;">
+                            <h3 style="font-weight:800; font-size:1.25rem;">Monthly Gross Revenue ($)</h3>
+                            <div id="monthly-revenue-chart-container" style="flex:1; height:260px; min-height:260px; position:relative; width:100%;">
+                                <!-- Rendered dynamically via SVG -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Platform Commission Settings -->
+                    <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px; box-shadow:var(--shadow-sm);">
+                        <h3 style="font-weight:800; font-size:1.2rem; margin-bottom:4px;">Platform Commission Setting</h3>
+                        <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:14px;">Set the percentage split fee collected by the system automatically on new bookings requests.</p>
+                        <form id="admin-commission-form" style="display:flex; gap:12px; align-items:center;">
+                            <label style="font-weight:700; font-size:0.9rem; display:flex; align-items:center; gap:8px;">
+                                Commission Rate (%)
+                                <input name="rate" type="number" min="0" max="100" step="0.5" required style="width:100px; padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit; text-align:center;">
+                            </label>
+                            <button type="submit" class="mini-button" style="background:var(--accent); color:#fff; border-color:var(--accent); margin:0;">Save Rate</button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- 1. COPYWRITING & CORE STATS -->
+                <section class="dashboard-pane" id="admin-copy-pane">
+                    <div>
+                        <h2 style="font-weight:900; font-size:1.85rem;">Update Website Content</h2>
+                        <p style="color:var(--text-muted); font-size:0.95rem;">Landing page updates are immediately saved and reflected.</p>
+                    </div>
+
+                    <div class="admin-grid">
+                        <form class="admin-card" data-site-form>
+                            <h3>Homepage Copy</h3>
+                            <label>
+                                Site Name
+                                <input name="siteName" type="text" required>
+                            </label>
+                            <label>
+                                Hero Eyebrow
+                                <input name="heroEyebrow" type="text" required>
+                            </label>
+                            <label>
+                                Hero Title
+                                <input name="heroTitle" type="text" required>
+                            </label>
+                            <label>
+                                Hero Description
+                                <textarea name="heroDescription" rows="3" required></textarea>
+                            </label>
+                            <button type="submit">Save Homepage Details</button>
+                        </form>
+
+                        <div class="admin-card">
+                            <h3>Quick Management Controls</h3>
+                            <p style="color:var(--text-muted); font-size: 0.92rem; margin-bottom: 16px; line-height: 1.5;">Configure core data seeds, create platform stays, metrics, features, or clear browser data.</p>
+                            <div style="display: grid; gap: 12px; grid-template-columns: 1fr 1fr;">
+                                <button type="button" class="mini-button" id="add-property-btn" style="margin:0; min-height:44px;">Add Property</button>
+                                <button type="button" class="mini-button" id="add-stat-btn" style="margin:0; min-height:44px;">Add Stat</button>
+                                <button type="button" class="mini-button" id="add-service-btn" style="margin:0; min-height:44px;">Add Service</button>
+                                <button type="button" class="mini-button reset-btn" id="reset-app-btn" style="margin:0; min-height:44px; color:#ffffff; background:var(--primary)!important; border-color:var(--primary);">Reset Data</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-bookings">
+                        <div class="section-heading compact-heading">
+                            <h2>Current homepage metrics</h2>
+                            <p>Select items to update or delete.</p>
+                        </div>
+                        <div class="admin-lists">
+                            <div class="admin-list">
+                                <h3>Featured Properties</h3>
+                                <div data-admin-properties></div>
+                            </div>
+                            <div class="admin-list">
+                                <h3>Statistics</h3>
+                                <div data-admin-stats></div>
+                            </div>
+                            <div class="admin-list">
+                                <h3>Services Offered</h3>
+                                <div data-admin-services></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. STAYS CATALOG -->
+                <section class="dashboard-pane" id="admin-properties-pane">
+                    <div>
+                        <h2 style="font-weight:900; font-size:1.85rem;">Stays Catalog</h2>
+                        <p style="color:var(--text-muted); font-size:0.95rem;">Manage all listed properties on the platform.</p>
+                    </div>
+                    <div class="property-grid" data-admin-properties-grid>
+                        <!-- Populated dynamically via app.js -->
+                    </div>
+                </section>
+
+                <!-- 3. PLATFORM BOOKINGS -->
+                <section class="dashboard-pane" id="admin-bookings-pane">
+                    <div>
+                        <h2 style="font-weight:900; font-size:1.85rem;">Global Booking Logs</h2>
+                        <p style="color:var(--text-muted); font-size:0.95rem;">View and approve/reject bookings requested across RoomBnB.</p>
+                    </div>
+                    <div class="request-list" data-admin-requests>
+                        <!-- Populated dynamically via app.js -->
+                    </div>
+                </section>
+
+                <!-- 4. USER ACCOUNTS -->
+                <section class="dashboard-pane" id="admin-users-pane">
+                    <div>
+                        <h2 style="font-weight:900; font-size:1.85rem;">Registered Users Database</h2>
+                        <p style="color:var(--text-muted); font-size:0.95rem;">Manage travelers, property owners, and platform administrators.</p>
+                    </div>
+                    <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px; box-shadow:var(--shadow-sm); overflow-x:auto;">
+                        <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.92rem;">
+                            <thead>
+                                <tr style="border-bottom:2px solid var(--border); padding-bottom:8px;">
+                                    <th style="padding:12px; font-weight:800; color:var(--text-muted);">Name</th>
+                                    <th style="padding:12px; font-weight:800; color:var(--text-muted);">Email</th>
+                                    <th style="padding:12px; font-weight:800; color:var(--text-muted);">Phone</th>
+                                    <th style="padding:12px; font-weight:800; color:var(--text-muted);">Role</th>
+                                    <th style="padding:12px; font-weight:800; color:var(--text-muted);">Identity Status</th>
+                                    <th style="padding:12px; font-weight:800; color:var(--text-muted); text-align:center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-users-table-body">
+                                <!-- Populated dynamically via app.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 5. REPORTED REVIEWS MODERATION -->
+                <section class="dashboard-pane" id="admin-reviews-pane">
+                    <div>
+                        <h2 style="font-weight:900; font-size:1.85rem;">Reported Reviews</h2>
+                        <p style="color:var(--text-muted); font-size:0.95rem;">Moderate and delete reviews flagged as inappropriate by customers.</p>
+                    </div>
+                    <div class="request-list" id="admin-reported-reviews-list">
+                        <!-- Populated dynamically via app.js -->
+                    </div>
+                </section>
+
+                <!-- 7. COUPONS CRUD -->
+                <section class="dashboard-pane" id="admin-coupons-pane">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <div>
+                            <h2 style="font-weight:900; font-size:1.85rem;">Platform Promo Coupons</h2>
+                            <p style="color:var(--text-muted); font-size:0.95rem;">Create, update, activate, and delete discount codes for traveler bookings.</p>
+                        </div>
+                        <button type="button" class="button-primary" id="admin-create-coupon-btn" style="min-height:44px; padding:0 20px; font-size:0.92rem; margin:0;">Create Coupon</button>
+                    </div>
+
+                    <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px; box-shadow:var(--shadow-sm); overflow-x:auto;">
+                        <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.92rem;">
+                            <thead>
+                                <tr style="border-bottom:2px solid var(--border); padding-bottom:8px;">
+                                    <th style="padding:12px; font-weight:800; color:var(--text-muted);">Promo Code</th>
+                                    <th style="padding:12px; font-weight:800; color:var(--text-muted);">Type</th>
+                                    <th style="padding:12px; font-weight:800; color:var(--text-muted);">Discount Value</th>
+                                    <th style="padding:12px; font-weight:800; color:var(--text-muted);">Description</th>
+                                    <th style="padding:12px; font-weight:800; color:var(--text-muted);">Status</th>
+                                    <th style="padding:12px; font-weight:800; color:var(--text-muted); text-align:center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-coupons-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 8. DISPUTES & SUPPORT TICKETS -->
+                <section class="dashboard-pane" id="admin-tickets-pane">
+                    <div>
+                        <h2 style="font-weight:900; font-size:1.85rem;">Customer Disputes & Support Tickets</h2>
+                        <p style="color:var(--text-muted); font-size:0.95rem;">Respond to traveler and owner complaints raised to support team.</p>
+                    </div>
+
+                    <div class="chat-container" id="admin-tickets-workspace-container" style="display: grid; grid-template-columns: 320px 1fr; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); height: 500px; overflow: hidden; margin-top: 20px;">
+                        <div class="chat-sidebar" id="admin-tickets-sidebar-list" style="border-right: 1px solid var(--border); overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+                            <!-- Loaded dynamically -->
+                        </div>
+                        <div class="chat-main-panel" style="display: flex; flex-direction: column; height: 100%;">
+                            <div class="chat-header-bar" id="admin-ticket-chat-header-name" style="padding: 16px; border-bottom: 1px solid var(--border); font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
+                                <span>Select a ticket to view conversation</span>
+                                <button type="button" class="mini-button" id="admin-close-ticket-action-btn" style="display:none; background: var(--error); border-color: var(--error); color: #fff; padding: 4px 10px; font-size: 0.8rem; margin: 0;">Close Ticket</button>
+                            </div>
+                            <div class="chat-history" id="admin-ticket-chat-history" style="flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; background: var(--secondary-light);">
+                                <div style="margin:auto; text-align:center; color:var(--text-muted);">
+                                    <span style="font-size:3rem; display:block; margin-bottom:12px;">🛠️</span>
+                                    <span>Pick a support ticket on the left to view messages.</span>
+                                </div>
+                            </div>
+                            <div class="chat-input-bar" style="padding: 12px; border-top: 1px solid var(--border); display: flex; gap: 8px; align-items: center; background: var(--surface);">
+                                <input type="text" id="admin-ticket-chat-message-input" placeholder="Type a message to user..." disabled style="flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font: inherit;">
+                                <button type="button" class="chat-send-btn" id="admin-ticket-chat-send-btn" disabled style="padding: 10px 16px; background: var(--primary); border: 1px solid var(--primary); color: #fff; border-radius: var(--radius-sm); cursor: pointer;">➔</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 9. CMS CONFIGURATION PANEL -->
+                <section class="dashboard-pane" id="admin-cms-pane">
+                    <div>
+                        <h2 style="font-weight:900; font-size:1.85rem;">CMS Configurations</h2>
+                        <p style="color:var(--text-muted); font-size:0.95rem;">Manage copywriting for About Us, Contact details, terms, and privacy disclosures.</p>
+                    </div>
+
+                    <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:30px; box-shadow:var(--shadow-sm); display:grid; gap:20px; margin-top:20px;">
+                        <form id="admin-cms-form">
+                            <div style="display:flex; flex-direction:column; gap:16px;">
+                                <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem; text-align:left;">
+                                    About Us Copywriting
+                                    <textarea name="aboutUs" rows="3" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit; resize:vertical;"></textarea>
+                                </label>
+                                <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem; text-align:left;">
+                                    Contact Info & Details
+                                    <textarea name="contactUs" rows="2" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit; resize:vertical;"></textarea>
+                                </label>
+                                <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem; text-align:left;">
+                                    Terms & Conditions Summary
+                                    <textarea name="terms" rows="3" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit; resize:vertical;"></textarea>
+                                </label>
+                                <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem; text-align:left;">
+                                    Privacy Policy Copy
+                                    <textarea name="privacy" rows="3" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit; resize:vertical;"></textarea>
+                                </label>
+                                <button type="submit" class="mini-button" style="background:var(--accent); color:#fff; border-color:var(--accent); padding:12px 24px; align-self:flex-start;">Save CMS Content</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+        <footer>RoomBnB Property Management System. Built for owners, managers, and memorable stays.</footer>
+    </div>
+
+    <!-- Dialog Modal: Add/Edit Property -->
+    <dialog id="admin-property-modal" class="custom-modal">
+        <div class="modal-header">
+            <h2 id="property-modal-title">Save Property</h2>
+            <button class="modal-close-btn" data-close-modal="admin-property-modal">&times;</button>
+        </div>
+        <form data-property-form>
+            <div class="modal-body">
+                <input name="id" type="hidden">
+                <label style="display:grid; gap:8px; margin-bottom:14px; font-weight:700; font-size:0.88rem; color:#4d4d4d;">
+                    Property Name
+                    <input name="name" type="text" required style="width:100%; border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:#222222; font:inherit;">
+                </label>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+                    <label style="display:grid; gap:8px; font-weight:700; font-size:0.88rem; color:#4d4d4d;">
+                        Type
+                        <input name="type" type="text" placeholder="e.g. Apartment, Villa, Studio" required style="width:100%; border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:#222222; font:inherit;">
+                    </label>
+                    <label style="display:grid; gap:8px; font-weight:700; font-size:0.88rem; color:#4d4d4d;">
+                        Price per night ($)
+                        <input name="price" type="number" min="1" required style="width:100%; border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:#222222; font:inherit;">
+                    </label>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin-bottom:14px;">
+                    <label style="display:grid; gap:8px; font-weight:700; font-size:0.88rem; color:#4d4d4d;">
+                        Capacity (Guests)
+                        <input name="capacity" type="number" min="1" required style="width:100%; border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:#222222; font:inherit;">
+                    </label>
+                    <label style="display:grid; gap:8px; font-weight:700; font-size:0.88rem; color:#4d4d4d;">
+                        Bedrooms
+                        <input name="bedrooms" type="number" min="1" required style="width:100%; border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:#222222; font:inherit;">
+                    </label>
+                    <label style="display:grid; gap:8px; font-weight:700; font-size:0.88rem; color:#4d4d4d;">
+                        Bathrooms
+                        <input name="bathrooms" type="number" min="1" required style="width:100%; border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:#222222; font:inherit;">
+                    </label>
+                </div>
+                <label style="display:grid; gap:8px; margin-bottom:14px; font-weight:700; font-size:0.88rem; color:#4d4d4d;">
+                    Description
+                    <textarea name="description" rows="3" required style="width:100%; border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:#222222; font:inherit; resize:vertical;"></textarea>
+                </label>
+                <div style="display:grid; gap:8px; margin-bottom:14px; font-weight:700; font-size:0.88rem; color:#4d4d4d;">
+                    House Rules (comma-separated)
+                    <input name="rules" type="text" placeholder="e.g. No smoking, No parties" style="width:100%; border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:#222222; font:inherit;">
+                </div>
+                <div>
+                    <span style="font-size:0.82rem; font-weight:800; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:10px;">Select Amenities Offered</span>
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px;" id="admin-property-amenities">
+                        <label style="display:flex; gap:8px; font-weight:600; font-size:0.9rem; align-items:center; cursor:pointer;"><input type="checkbox" value="High-speed WiFi"> WiFi</label>
+                        <label style="display:flex; gap:8px; font-weight:600; font-size:0.9rem; align-items:center; cursor:pointer;"><input type="checkbox" value="Air conditioning"> AC</label>
+                        <label style="display:flex; gap:8px; font-weight:600; font-size:0.9rem; align-items:center; cursor:pointer;"><input type="checkbox" value="Kitchen essentials"> Kitchen</label>
+                        <label style="display:flex; gap:8px; font-weight:600; font-size:0.9rem; align-items:center; cursor:pointer;"><input type="checkbox" value="Pool"> Pool</label>
+                        <label style="display:flex; gap:8px; font-weight:600; font-size:0.9rem; align-items:center; cursor:pointer;"><input type="checkbox" value="Gym"> Gym</label>
+                        <label style="display:flex; gap:8px; font-weight:600; font-size:0.9rem; align-items:center; cursor:pointer;"><input type="checkbox" value="Parking"> Parking</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="mini-button" style="margin:0;" data-close-modal="admin-property-modal">Cancel</button>
+                <button type="submit" class="mini-button" style="margin:0; background:var(--accent); color:#fff; border-color:var(--accent);">Save property</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Dialog Modal: Add/Edit Stat -->
+    <dialog id="admin-stat-modal" class="custom-modal">
+        <div class="modal-header">
+            <h2 id="stat-modal-title">Save Stat</h2>
+            <button class="modal-close-btn" data-close-modal="admin-stat-modal">&times;</button>
+        </div>
+        <form data-stat-form>
+            <div class="modal-body">
+                <input name="id" type="hidden">
+                <label style="display:grid; gap:8px; margin-bottom:14px; font-weight:700; font-size:0.88rem; color:#4d4d4d;">
+                    Value
+                    <input name="value" type="text" placeholder="e.g. 98% or 2.4k" required style="width:100%; border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:#222222; font:inherit;">
+                </label>
+                <label style="display:grid; gap:8px; font-weight:700; font-size:0.88rem; color:#4d4d4d;">
+                    Label
+                    <input name="label" type="text" placeholder="e.g. guest satisfaction" required style="width:100%; border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:#222222; font:inherit;">
+                </label>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="mini-button" style="margin:0;" data-close-modal="admin-stat-modal">Cancel</button>
+                <button type="submit" class="mini-button" style="margin:0; background:var(--accent); color:#fff; border-color:var(--accent);">Save stat</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Dialog Modal: Add/Edit Service -->
+    <dialog id="admin-service-modal" class="custom-modal">
+        <div class="modal-header">
+            <h2 id="service-modal-title">Save Service</h2>
+            <button class="modal-close-btn" data-close-modal="admin-service-modal">&times;</button>
+        </div>
+        <form data-service-form>
+            <div class="modal-body">
+                <input name="id" type="hidden">
+                <label style="display:grid; gap:8px; margin-bottom:14px; font-weight:700; font-size:0.88rem; color:#4d4d4d;">
+                    Service Title
+                    <input name="title" type="text" required style="width:100%; border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:#222222; font:inherit;">
+                </label>
+                <label style="display:grid; gap:8px; font-weight:700; font-size:0.88rem; color:#4d4d4d;">
+                    Description
+                    <textarea name="description" rows="3" required style="width:100%; border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:#222222; font:inherit; resize:vertical;"></textarea>
+                </label>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="mini-button" style="margin:0;" data-close-modal="admin-service-modal">Cancel</button>
+                <button type="submit" class="mini-button" style="margin:0; background:var(--accent); color:#fff; border-color:var(--accent);">Save service</button>
+            </div>
+        </form>
+    </dialog>
+    <!-- Dialog Modal: Add/Edit Coupon -->
+    <dialog id="admin-coupon-modal" class="custom-modal">
+        <div class="modal-header">
+            <h2 id="coupon-modal-title">Save Coupon</h2>
+            <button class="modal-close-btn" data-close-modal="admin-coupon-modal">&times;</button>
+        </div>
+        <form id="admin-coupon-form">
+            <div class="modal-body" style="display:flex; flex-direction:column; gap:14px; text-align:left;">
+                <label style="display:grid; gap:6px; font-weight:700; font-size:0.85rem;">
+                    Promo Coupon Code (alphanumeric uppercase)
+                    <input name="code" type="text" placeholder="e.g. SUMMER30" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                </label>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                    <label style="display:grid; gap:6px; font-weight:700; font-size:0.85rem;">
+                        Discount Type
+                        <select name="discountType" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit; background:var(--surface);">
+                            <option value="percent">Percentage (%)</option>
+                            <option value="flat">Flat Dollar ($)</option>
+                        </select>
+                    </label>
+                    <label style="display:grid; gap:6px; font-weight:700; font-size:0.85rem;">
+                        Discount Value
+                        <input name="value" type="number" min="1" placeholder="e.g. 20" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                    </label>
+                </div>
+                <label style="display:grid; gap:6px; font-weight:700; font-size:0.85rem;">
+                    Short Description
+                    <input name="description" type="text" placeholder="e.g. 20% discount on summer stays" style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                </label>
+                <label style="display:flex; gap:8px; font-weight:700; font-size:0.85rem; align-items:center; cursor:pointer;">
+                    <input name="active" type="checkbox" checked value="1"> Active & Valid
+                </label>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="mini-button" data-close-modal="admin-coupon-modal">Cancel</button>
+                <button type="submit" class="mini-button" style="background:var(--accent); color:#fff; border-color:var(--accent); margin:0;">Save Coupon</button>
+            </div>
+        </form>
+    </dialog>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | RoomBnB</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/api.js?v=1.0.1" defer></script>
+    <script src="js/main.js?v=1.0.1" defer></script>
+    <script src="js/router.js?v=1.0.1" defer></script>
+</head>
+<body>
+    <div class="login-screen" id="register-view">
+        <form class="login-card" data-register-form>
+            <a class="brand login-brand" href="index.html">
+                <span class="brand-mark">R</span>
+                <span data-site-name>RoomBnB</span>
+            </a>
+            <div>
+                <h1>Create account</h1>
+                <p>Register as a traveler or become a property host.</p>
+            </div>
+            
+            <label class="register-field">
+                Account type
+                <select name="role" required>
+                    <option value="customer">Traveler / Guest (Book properties)</option>
+                    <option value="host">Property Owner / Host (List & rent homes)</option>
+                </select>
+            </label>
+            <label class="register-field">
+                Full name
+                <input name="name" type="text" placeholder="Enter your full name" required>
+            </label>
+            <label class="register-field">
+                Email
+                <input name="email" type="email" placeholder="Enter your email" required>
+            </label>
+            <label class="register-field">
+                Phone Number
+                <input name="phone" type="tel" placeholder="e.g. +1 555-019-922" required>
+            </label>
+            <label class="register-field">
+                Address
+                <input name="address" type="text" placeholder="Enter your address" required>
+            </label>
+            <label class="register-field">
+                Password
+                <input name="password" type="password" placeholder="At least 6 characters" required minlength="6">
+            </label>
+            <p class="login-error" data-register-error></p>
+            <button type="submit" class="button-primary">Create account</button>
+            <a class="small-link" href="login.html">Already have an account? Sign in</a>
+            <a class="small-link" href="index.html">← Back to homepage</a>
+        </form>
+    </div>
+</body>
+</html>
