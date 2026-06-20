@@ -9,6 +9,11 @@
     <script src="app.js" defer></script>
 </head>
 <body>
+    <!-- Email Verification Banner -->
+    <div id="email-verification-banner" class="auth-banner" style="margin-top: 86px; display: none; border-radius: 0; border-inline: 0; position: relative; z-index: 100;">
+        <span>Your email is not verified yet. Click <strong style="cursor: pointer; text-decoration: underline;" id="verify-email-banner-btn">Verify Email</strong> to enable all booking features.</span>
+    </div>
+
     <!-- Shared Topbar Header -->
     <header class="topbar">
         <nav class="nav" aria-label="Main navigation">
@@ -18,8 +23,26 @@
             </a>
             <!-- Dynamic Navigation Links Slot -->
             <div class="nav-links" id="dynamic-nav-links"></div>
+            
+            <!-- Notification bell & Popover slot -->
+            <div class="notif-bell-wrapper" id="notif-bell-container" style="display:flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; background:var(--secondary-light); border:1px solid var(--border);">
+                <span style="font-size:1.2rem;">🔔</span>
+                <div class="notif-badge" id="notif-bell-badge" style="display:none;">0</div>
+                
+                <div class="notif-drawer" id="notif-bell-drawer">
+                    <div class="notif-drawer-header">
+                        <span>Notifications</span>
+                        <span class="small-link" id="notif-mark-read-btn" style="font-size:0.75rem;">Clear All</span>
+                    </div>
+                    <div class="notif-drawer-body" id="notif-bell-list">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+
             <!-- Dynamic Session Actions Slot -->
             <div class="session-actions" id="dynamic-session-actions"></div>
+            
             <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Open navigation menu">☰</button>
         </nav>
     </header>
@@ -39,31 +62,177 @@
 
     <!-- CUSTOMER VIEW -->
     <div id="customer-view" class="page-shell">
-        <main>
-            <section class="section dashboard-hero">
-                <div class="section-heading">
-                    <h2>Customer dashboard</h2>
-                    <p>Browse available properties and send booking requests to the admin.</p>
+        <div class="dashboard-wrapper">
+            <!-- Sidebar Navigation Tabs -->
+            <aside class="sidebar-menu">
+                <div style="margin-bottom:16px; padding:0 8px;">
+                    <h3 style="font-size:1.15rem; font-weight:900;">Traveler Workspace</h3>
+                    <p style="font-size:0.8rem; color:var(--text-muted);">Manage your bookings & chats</p>
                 </div>
-            </section>
+                <div class="menu-item active" data-tab-target="customer-properties">
+                    <span style="font-size:1.15rem;">🔍</span> Search Stays
+                </div>
+                <div class="menu-item" data-tab-target="customer-requests">
+                    <span style="font-size:1.15rem;">📋</span> My Bookings
+                </div>
+                <div class="menu-item" data-tab-target="customer-favorites">
+                    <span style="font-size:1.15rem;">❤️</span> Wishlist Stays
+                </div>
+                <div class="menu-item" data-tab-target="customer-chat">
+                    <span style="font-size:1.15rem;">💬</span> Host Inbox
+                </div>
+                <div class="menu-item" data-tab-target="customer-profile">
+                    <span style="font-size:1.15rem;">👤</span> Profile Settings
+                </div>
+            </aside>
 
-            <section class="section" id="customer-properties">
-                <div class="section-heading">
-                    <h2>Available properties</h2>
-                    <p>Pick a managed stay and request it in one click.</p>
-                </div>
-                <div class="property-grid" data-property-list></div>
-            </section>
+            <!-- Dashboard Content Panels -->
+            <main class="dashboard-content-pane">
+                
+                <!-- 1. SEARCH PROPERTIES -->
+                <section class="dashboard-pane active" id="customer-properties-pane">
+                    <div>
+                        <h2 style="font-weight:900; font-size:1.85rem;">Available Properties</h2>
+                        <p style="color:var(--text-muted); font-size:0.95rem;">Pick a managed stay and make a reservation request.</p>
+                    </div>
+                    <div class="property-grid" data-property-list>
+                        <!-- Populated dynamically via app.js -->
+                    </div>
+                </section>
 
-            <section class="section dashboard-section" id="requests">
-                <div class="section-heading">
-                    <h2>My booking requests</h2>
-                    <p>Your submitted requests appear here.</p>
-                </div>
-                <div class="request-list" data-customer-requests></div>
-            </section>
-        </main>
-        <footer data-footer-text>RoomBnB. Built for travelers, hosts, and memorable stays.</footer>
+                <!-- 2. MY BOOKINGS -->
+                <section class="dashboard-pane" id="customer-requests-pane">
+                    <div>
+                        <h2 style="font-weight:900; font-size:1.85rem;">My Booking Requests & Trips</h2>
+                        <p style="color:var(--text-muted); font-size:0.95rem;">Check statuses, download invoices, write stays reviews or cancel trips.</p>
+                    </div>
+
+                    <div class="request-list" data-customer-requests>
+                        <!-- Populated dynamically via app.js -->
+                    </div>
+                </section>
+
+                <!-- 3. WISHLIST -->
+                <section class="dashboard-pane" id="customer-favorites-pane">
+                    <div>
+                        <h2 style="font-weight:900; font-size:1.85rem;">My Saved Wishlist</h2>
+                        <p style="color:var(--text-muted); font-size:0.95rem;">Compare and check stays you've starred.</p>
+                    </div>
+                    <div class="property-grid" data-customer-favorites-list>
+                        <!-- Populated dynamically via app.js -->
+                    </div>
+                </section>
+
+                <!-- 4. CHAT SYSTEM -->
+                <section class="dashboard-pane" id="customer-chat-pane">
+                    <div>
+                        <h2 style="font-weight:900; font-size:1.85rem;">Host Inbox</h2>
+                        <p style="color:var(--text-muted); font-size:0.95rem;">Chat directly with the owners of properties you requested.</p>
+                    </div>
+
+                    <div class="chat-container" id="customer-chat-container">
+                        <div class="chat-sidebar" id="customer-chat-sidebar">
+                            <!-- Convo threads loaded dynamically -->
+                        </div>
+                        <div class="chat-main-panel">
+                            <div class="chat-header-bar" id="customer-chat-header-name">
+                                Select a conversation thread
+                            </div>
+                            <div class="chat-history" id="customer-chat-history">
+                                <div style="margin:auto; text-align:center; color:var(--text-muted);">
+                                    <span style="font-size:3rem; display:block; margin-bottom:12px;">💬</span>
+                                    <span>Pick a host convo on the left to begin chatting.</span>
+                                </div>
+                            </div>
+                            <div class="chat-input-bar">
+                                <input type="file" id="customer-chat-file-input" class="file-input-hidden" accept="image/*">
+                                <button type="button" class="chat-attach-btn" id="customer-chat-attach-btn" title="Send Mock Image">📎</button>
+                                <input type="text" id="customer-chat-message-input" placeholder="Type a message..." disabled>
+                                <button type="button" class="chat-send-btn" id="customer-chat-send-btn" disabled>➔</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. PROFILE & IDENTITY SETTINGS -->
+                <section class="dashboard-pane" id="customer-profile-pane">
+                    <div>
+                        <h2 style="font-weight:900; font-size:1.85rem;">Account Profile</h2>
+                        <p style="color:var(--text-muted); font-size:0.95rem;">Manage personal details, upload identity verifications and change passwords.</p>
+                    </div>
+
+                    <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:30px; box-shadow:var(--shadow-sm); display:grid; gap:24px;">
+                        
+                        <!-- Avatar Picture Section -->
+                        <div class="profile-pic-container">
+                            <div class="profile-avatar-large" id="profile-avatar-view" style="background-image: url(''); background-color: var(--border);"></div>
+                            <div>
+                                <h4 style="font-weight:800; font-size:1.1rem; margin-bottom:6px;">Profile Picture</h4>
+                                <input type="file" id="profile-pic-upload" class="file-input-hidden" accept="image/*">
+                                <button type="button" class="mini-button" id="trigger-pic-upload-btn">Upload Photo</button>
+                            </div>
+                        </div>
+
+                        <!-- User Info Form -->
+                        <form id="profile-update-form">
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+                                <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem;">
+                                    Full Name
+                                    <input name="name" type="text" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                                </label>
+                                <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem;">
+                                    Phone Number
+                                    <input name="phone" type="tel" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                                </label>
+                            </div>
+                            <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem; margin-bottom:16px;">
+                                Address
+                                <input name="address" type="text" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                            </label>
+                            <button type="submit" class="mini-button" style="background:var(--accent); color:#fff; border-color:var(--accent); padding:10px 24px;">Save Personal Info</button>
+                        </form>
+
+                        <hr style="border:0; border-bottom:1px solid var(--border);">
+
+                        <!-- Password Change Form -->
+                        <form id="profile-password-form">
+                            <h3 style="font-weight:800; font-size:1.2rem; margin-bottom:12px;">Change Password</h3>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+                                <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem;">
+                                    Current Password
+                                    <input name="oldPassword" type="password" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                                </label>
+                                <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem;">
+                                    New Password
+                                    <input name="newPassword" type="password" required minlength="6" style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                                </label>
+                            </div>
+                            <p class="login-error" id="profile-pass-error" style="margin-top:-8px;"></p>
+                            <button type="submit" class="mini-button" style="padding:10px 24px;">Update Password</button>
+                        </form>
+
+                        <hr style="border:0; border-bottom:1px solid var(--border);">
+
+                        <!-- Identity Verification Form -->
+                        <div>
+                            <h3 style="font-weight:800; font-size:1.2rem; margin-bottom:4px;">Identity Verification</h3>
+                            <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:14px;">Upload a government ID card to obtain the verified badge across the platform.</p>
+                            
+                            <div id="identity-unverified-box">
+                                <input type="file" id="id-card-upload" class="file-input-hidden" accept="image/*">
+                                <button type="button" class="mini-button" id="trigger-id-upload-btn" style="background:var(--accent); color:#fff; border-color:var(--accent);">Upload ID Card</button>
+                            </div>
+                            <div id="identity-verified-box" style="display:none; background:var(--primary-light); border:1px solid var(--primary); padding:16px; border-radius:var(--radius); color:var(--primary); font-weight:700; align-items:center; gap:8px;">
+                                <span style="font-size:1.2rem;">✓</span> Your Identity is fully verified!
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+            </main>
+        </div>
+        <footer>RoomBnB. Built for travelers, hosts, and memorable stays.</footer>
     </div>
 
     <!-- HTML5 Dialog Modal: Property Details -->
@@ -80,25 +249,134 @@
         </div>
     </dialog>
 
-    <!-- HTML5 Drag & Drop Favorites Drawer -->
-    <div id="favorites-drawer" class="favorites-drawer">
-        <div class="favorites-header" id="favorites-header">
-            <div class="favorites-title">
-                <span>Favorites & Compare</span>
-                <span class="favorites-count" id="favorites-count">0</span>
-            </div>
-            <button class="favorites-toggle" id="favorites-toggle">Show</button>
+    <!-- HTML5 Dialog Modal: Payment Process Screen -->
+    <dialog id="payment-modal" class="custom-modal" style="width: min(600px, 92vw);">
+        <div class="modal-header">
+            <h2>Complete Secure Booking</h2>
+            <button class="modal-close-btn" data-close-modal="payment-modal">&times;</button>
         </div>
-        <div class="favorites-body">
-            <div class="favorites-drop-zone" id="favorites-drop-zone">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-                <strong>Drag Stays Here</strong>
-                <p>Drop a stay to add to favorites</p>
+        <form id="payment-submit-form">
+            <div class="modal-body">
+                <div style="display:flex; justify-content:space-around; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:12px;">
+                    <label style="display:flex; gap:8px; align-items:center; font-weight:800; cursor:pointer;"><input type="radio" name="payMethod" value="card" checked id="pay-card-radio"> Credit / Debit Card</label>
+                    <label style="display:flex; gap:8px; align-items:center; font-weight:800; cursor:pointer;"><input type="radio" name="payMethod" value="upi" id="pay-upi-radio"> UPI Transfer</label>
+                </div>
+
+                <div id="payment-card-panel">
+                    <div class="card-perspective">
+                        <div class="credit-card-mockup" id="cc-mockup">
+                            <div class="card-face front">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <div class="card-chip"></div>
+                                    <strong style="font-size:1.1rem; font-style:italic; letter-spacing:-0.5px;">SECURE PAY</strong>
+                                </div>
+                                <div class="card-number-label" id="cc-cardnumber-view">•••• •••• •••• ••••</div>
+                                <div class="card-row">
+                                    <div>
+                                        <div class="card-holder-label">Card Holder</div>
+                                        <div class="card-holder-val" id="cc-cardholder-view">JOHN DOE</div>
+                                    </div>
+                                    <div>
+                                        <div class="card-expiry-label">Expires</div>
+                                        <div class="card-expiry-val" id="cc-expiry-view">MM/YY</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-face back">
+                                <div class="card-magnetic-strip"></div>
+                                <div class="card-signature-box"></div>
+                                <div class="card-cvv-box" id="cc-cvv-view">•••</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; gap:14px;">
+                        <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem;">
+                            Cardholder Name
+                            <input type="text" id="cc-name-input" placeholder="e.g. John Doe" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                        </label>
+                        <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem;">
+                            Card Number
+                            <input type="text" id="cc-number-input" placeholder="e.g. 4111 2222 3333 4444" maxlength="19" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                        </label>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                            <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem;">
+                                Expiration (MM/YY)
+                                <input type="text" id="cc-expiry-input" placeholder="e.g. 12/28" maxlength="5" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                            </label>
+                            <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem;">
+                                CVV Code
+                                <input type="password" id="cc-cvv-input" placeholder="e.g. 123" maxlength="3" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="payment-upi-panel" hidden>
+                    <div class="upi-scan-panel">
+                        <div class="qr-code-box">
+                            <svg viewBox="0 0 100 100" width="100%" height="100%"><rect x="10" y="10" width="20" height="20" fill="#000"/><rect x="70" y="10" width="20" height="20" fill="#000"/><rect x="10" y="70" width="20" height="20" fill="#000"/><rect x="35" y="35" width="30" height="30" fill="#000" rx="4"/><rect x="15" y="15" width="10" height="10" fill="#fff"/><rect x="75" y="15" width="10" height="10" fill="#fff"/><rect x="15" y="75" width="10" height="10" fill="#fff"/></svg>
+                        </div>
+                        <p style="font-weight:700; font-size:0.95rem; color:var(--text-muted);">Scan this QR Code using any UPI App</p>
+                        <div style="font-weight:800; font-size:1.1rem;">OR ENTER UPI ID</div>
+                        <input type="text" id="upi-id-input" placeholder="e.g. traveler@okaxis" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); text-align:center; font:inherit;">
+                    </div>
+                </div>
+
+                <div style="background:var(--secondary-light); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:800;">Amount Payable:</span>
+                    <span style="font-size:1.4rem; font-weight:900; color:var(--accent);" id="payment-payable-amount">$0.00</span>
+                </div>
             </div>
-            <div class="favorites-list" id="favorites-list">
-                <!-- Populated dynamically -->
+            <div class="modal-footer">
+                <button type="button" class="mini-button" data-close-modal="payment-modal">Cancel</button>
+                <button type="submit" class="mini-button" style="background:var(--accent); color:#fff; border-color:var(--accent);">Confirm Payment</button>
             </div>
+        </form>
+    </dialog>
+
+    <!-- HTML5 Dialog Modal: Write Review & Upload Picture -->
+    <dialog id="customer-review-modal" class="custom-modal">
+        <div class="modal-header">
+            <h2>Write Stay Review</h2>
+            <button class="modal-close-btn" data-close-modal="customer-review-modal">&times;</button>
         </div>
-    </div>
+        <form id="review-submit-form">
+            <div class="modal-body">
+                <input type="hidden" id="review-booking-id">
+                <input type="hidden" id="review-property-id">
+                <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem;">
+                    Rating (1 to 5 Stars)
+                    <select id="review-rating-input" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit; background:var(--surface);">
+                        <option value="5">★★★★★ (5 Stars)</option>
+                        <option value="4">★★★★☆ (4 Stars)</option>
+                        <option value="3">★★★☆☆ (3 Stars)</option>
+                        <option value="2">★★☆☆☆ (2 Stars)</option>
+                        <option value="1">★☆☆☆☆ (1 Star)</option>
+                    </select>
+                </label>
+                <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem; margin-top:14px;">
+                    Review Message
+                    <textarea id="review-text-input" rows="4" placeholder="How was your stay? Talk about cleanliness, location, host support..." required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit; resize:vertical;"></textarea>
+                </label>
+                
+                <div style="margin-top:14px;">
+                    <span style="font-weight:700; font-size:0.85rem; display:block; margin-bottom:6px;">Upload a Photo (Optional)</span>
+                    <input type="file" id="review-photo-upload" class="file-input-hidden" accept="image/*">
+                    <div style="display:flex; align-items:center; gap:16px;">
+                        <button type="button" class="mini-button" id="trigger-review-photo-btn">Choose Photo</button>
+                        <span id="review-photo-filename-label" style="font-size:0.85rem; color:var(--text-muted);">No photo selected</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="mini-button" data-close-modal="customer-review-modal">Cancel</button>
+                <button type="submit" class="mini-button" style="background:var(--accent); color:#fff; border-color:var(--accent);">Submit Review</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Isolated PDF Print invoice Container -->
+    <div id="print-invoice-container" style="display: none;"></div>
 </body>
 </html>

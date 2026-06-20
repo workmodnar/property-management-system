@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host Dashboard | RoomBnB</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="data.js" defer></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <!-- Email Verification Banner -->
+    <div id="email-verification-banner" class="auth-banner" style="margin-top: 86px; display: none; border-radius: 0; border-inline: 0; position: relative; z-index: 100;">
+        <span>Your email is not verified yet. Click <strong style="cursor: pointer; text-decoration: underline;" id="verify-email-banner-btn">Verify Email</strong> to enable all host features.</span>
+    </div>
+
+    <!-- Shared Topbar Header -->
+    <header class="topbar">
+        <nav class="nav" aria-label="Main navigation">
+            <a class="brand" href="index.html">
+                <span class="brand-mark">R</span>
+                <span data-site-name>RoomBnB</span>
+            </a>
+            <!-- Dynamic Navigation Links Slot -->
+            <div class="nav-links" id="dynamic-nav-links"></div>
+            <!-- Dynamic Session Actions Slot -->
+            <div class="session-actions" id="dynamic-session-actions"></div>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Open navigation menu">☰</button>
+        </nav>
+    </header>
+
+    <!-- Mobile Navigation Drawer -->
+    <dialog id="mobile-nav-dialog" class="mobile-nav-dialog">
+        <div class="mobile-nav-header">
+            <a class="brand" href="index.html">
+                <span class="brand-mark">R</span>
+                <span data-site-name>RoomBnB</span>
+            </a>
+            <button class="modal-close-btn" id="mobile-nav-close">&times;</button>
+        </div>
+        <div class="mobile-nav-body" id="mobile-nav-links"></div>
+        <div class="mobile-nav-actions" id="mobile-nav-actions"></div>
+    </dialog>
+
+    <!-- HOST DASHBOARD -->
+    <div id="host-view" class="page-shell">
+        <div class="dashboard-wrapper">
+            <!-- Sidebar Navigation Tabs -->
+            <aside class="sidebar-menu">
+                <div style="margin-bottom:16px; padding:0 8px;">
+                    <h3 style="font-size:1.15rem; font-weight:900;">Host Workspace</h3>
+                    <p style="font-size:0.8rem; color:var(--text-muted);">Manage listings & bookings</p>
+                </div>
+                <div class="menu-item active" data-tab-target="host-overview">
+                    <span style="font-size:1.15rem;">📈</span> Overview
+                </div>
+                <div class="menu-item" data-tab-target="host-properties">
+                    <span style="font-size:1.15rem;">🏡</span> My Listings
+                </div>
+                <div class="menu-item" data-tab-target="host-bookings">
+                    <span style="font-size:1.15rem;">📋</span> Guest Bookings
+                </div>
+                <div class="menu-item" data-tab-target="host-chat">
+                    <span style="font-size:1.15rem;">💬</span> Inbox Chat
+                </div>
+            </aside>
+
+            <!-- Dashboard Content Panels -->
+            <main class="dashboard-content-pane">
+                
+                <!-- 1. OVERVIEW / ANALYTICS -->
+                <section class="dashboard-pane active" id="host-overview-pane">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+                        <div>
+                            <h2 style="font-weight:900; font-size:1.85rem;">Welcome back, Host</h2>
+                            <p style="color:var(--text-muted); font-size:0.95rem;">Here is how your properties are performing this month.</p>
+                        </div>
+                        <div class="verified-badge" id="host-verified-badge" style="display:none;">
+                            Verified Host ✓
+                        </div>
+                    </div>
+
+                    <!-- Statistics grid -->
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <h4>Total Earnings</h4>
+                            <span id="host-total-earnings">$0.00</span>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Active Bookings</h4>
+                            <span id="host-active-bookings-count">0</span>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>My Stays</h4>
+                            <span id="host-total-listings-count">0</span>
+                        </div>
+                    </div>
+
+                    <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:30px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:16px;">
+                        <h3 style="font-weight:800; font-size:1.25rem;">Host Tips & Offers</h3>
+                        <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6;">Maximize your earnings by keeping your listing calendar updated. Active hosts who respond to guest booking requests in less than 24 hours see up to 35% more requests.</p>
+                        <div style="background:var(--accent-light); border:1px solid var(--border); padding:16px; border-radius:var(--radius); color:var(--accent); font-weight:700; font-size:0.92rem;">
+                            💡 Tip: List seasonal rules to clearly communicate guest rules and expectations upfront.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. MY PROPERTIES -->
+                <section class="dashboard-pane" id="host-properties-pane">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <h2 style="font-weight:900; font-size:1.85rem;">My Listings</h2>
+                            <p style="color:var(--text-muted); font-size:0.95rem;">Add and edit houses or apartments.</p>
+                        </div>
+                        <button class="button-primary" id="host-add-property-btn" style="min-height:44px; padding:0 20px; font-size:0.92rem;">Create Listing</button>
+                    </div>
+
+                    <div class="property-grid" data-host-properties-list>
+                        <!-- Populated dynamically via app.js -->
+                    </div>
+                </section>
+
+                <!-- 3. BOOKING REQUESTS -->
+                <section class="dashboard-pane" id="host-bookings-pane">
+                    <div>
+                        <h2 style="font-weight:900; font-size:1.85rem;">Guest Booking Requests</h2>
+                        <p style="color:var(--text-muted); font-size:0.95rem;">Review guest dates and process requests.</p>
+                    </div>
+
+                    <div class="request-list" data-host-bookings-list>
+                        <!-- Populated dynamically via app.js -->
+                    </div>
+                </section>
+
+                <!-- 4. CHAT SYSTEM -->
+                <section class="dashboard-pane" id="host-chat-pane">
+                    <div>
+                        <h2 style="font-weight:900; font-size:1.85rem;">Customer Inbox</h2>
+                        <p style="color:var(--text-muted); font-size:0.95rem;">Chat with travelers who booked or requested your stays.</p>
+                    </div>
+
+                    <div class="chat-container" id="host-chat-container">
+                        <div class="chat-sidebar" id="host-chat-sidebar">
+                            <!-- Convo threads loaded dynamically -->
+                        </div>
+                        <div class="chat-main-panel">
+                            <div class="chat-header-bar" id="host-chat-header-name">
+                                Select a conversation thread
+                            </div>
+                            <div class="chat-history" id="host-chat-history">
+                                <div style="margin:auto; text-align:center; color:var(--text-muted);">
+                                    <span style="font-size:3rem; display:block; margin-bottom:12px;">💬</span>
+                                    <span>Pick a guest chat on the left panel to begin.</span>
+                                </div>
+                            </div>
+                            <div class="chat-input-bar">
+                                <input type="file" id="host-chat-file-input" class="file-input-hidden" accept="image/*">
+                                <button type="button" class="chat-attach-btn" id="host-chat-attach-btn" title="Send Mock Image">📎</button>
+                                <input type="text" id="host-chat-message-input" placeholder="Type a reply..." disabled>
+                                <button type="button" class="chat-send-btn" id="host-chat-send-btn" disabled>➔</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+        <footer>RoomBnB. Built for travelers, hosts, and memorable stays.</footer>
+    </div>
+
+    <!-- HTML5 Dialog Modal: Add/Edit Property -->
+    <dialog id="host-property-modal" class="custom-modal">
+        <div class="modal-header">
+            <h2 id="host-modal-title">Save Listing</h2>
+            <button class="modal-close-btn" data-close-modal="host-property-modal">&times;</button>
+        </div>
+        <form data-host-property-form>
+            <div class="modal-body">
+                <input name="id" type="hidden">
+                <label style="display:grid; gap:6px; font-weight:700; font-size:0.85rem; margin-bottom:14px;">
+                    Property Name
+                    <input name="name" type="text" placeholder="e.g. Sunny Ocean Cottage" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                </label>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+                    <label style="display:grid; gap:6px; font-weight:700; font-size:0.85rem;">
+                        Property Type
+                        <input name="type" type="text" placeholder="e.g. Apartment, Villa, Cabin" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                    </label>
+                    <label style="display:grid; gap:6px; font-weight:700; font-size:0.85rem;">
+                        Base Price per night ($)
+                        <input name="price" type="number" min="10" placeholder="e.g. 150" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                    </label>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin-bottom:14px;">
+                    <label style="display:grid; gap:6px; font-weight:700; font-size:0.85rem;">
+                        Max Guest Capacity
+                        <input name="capacity" type="number" min="1" placeholder="e.g. 4" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                    </label>
+                    <label style="display:grid; gap:6px; font-weight:700; font-size:0.85rem;">
+                        Bedrooms
+                        <input name="bedrooms" type="number" min="1" placeholder="e.g. 2" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                    </label>
+                    <label style="display:grid; gap:6px; font-weight:700; font-size:0.85rem;">
+                        Bathrooms
+                        <input name="bathrooms" type="number" min="1" placeholder="e.g. 2" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                    </label>
+                </div>
+                <label style="display:grid; gap:6px; font-weight:700; font-size:0.85rem; margin-bottom:14px;">
+                    Listing Description
+                    <textarea name="description" rows="3" placeholder="Provide a detailed description..." required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit; resize:vertical;"></textarea>
+                </label>
+                <div style="border-top:1px solid var(--border); padding-top:14px; margin-bottom:14px;">
+                    <span style="font-size:0.82rem; font-weight:800; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:10px;">Select Amenities Offered</span>
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px;" id="host-property-amenities">
+                        <label style="display:flex; gap:8px; font-weight:600; font-size:0.9rem; align-items:center; cursor:pointer;"><input type="checkbox" value="High-speed WiFi"> WiFi</label>
+                        <label style="display:flex; gap:8px; font-weight:600; font-size:0.9rem; align-items:center; cursor:pointer;"><input type="checkbox" value="Air conditioning"> AC</label>
+                        <label style="display:flex; gap:8px; font-weight:600; font-size:0.9rem; align-items:center; cursor:pointer;"><input type="checkbox" value="Kitchen essentials"> Kitchen</label>
+                        <label style="display:flex; gap:8px; font-weight:600; font-size:0.9rem; align-items:center; cursor:pointer;"><input type="checkbox" value="Pool"> Pool</label>
+                        <label style="display:flex; gap:8px; font-weight:600; font-size:0.9rem; align-items:center; cursor:pointer;"><input type="checkbox" value="Gym"> Gym</label>
+                        <label style="display:flex; gap:8px; font-weight:600; font-size:0.9rem; align-items:center; cursor:pointer;"><input type="checkbox" value="Parking"> Parking</label>
+                    </div>
+                </div>
+                <label style="display:grid; gap:6px; font-weight:700; font-size:0.85rem;">
+                    House Rules (Separate with commas)
+                    <input name="rules" type="text" placeholder="e.g. No smoking inside, Quiet hours after 10PM" style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                </label>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="mini-button" data-close-modal="host-property-modal">Cancel</button>
+                <button type="submit" class="mini-button" style="background:var(--accent); color:#fff; border-color:var(--accent);">Save property</button>
+            </div>
+        </form>
+    </dialog>
+</body>
+</html>

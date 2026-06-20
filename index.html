@@ -4,13 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RoomBnB | Book Unique Stays</title>
-    <link class="page-css" rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
     <script src="data.js" defer></script>
     <script src="app.js" defer></script>
 </head>
 <body>
+    <!-- Email Verification Banner -->
+    <div id="email-verification-banner" class="auth-banner" style="margin-top: 86px; display: none; border-radius: 0; border-inline: 0; position: relative; z-index: 100;">
+        <span>Your email is not verified yet. Click <strong style="cursor: pointer; text-decoration: underline;" id="verify-email-banner-btn">Verify Email</strong> to enable all booking features.</span>
+    </div>
+
     <!-- Shared Topbar Header -->
-    <header class="topbar">
+    <header class="topbar" id="app-topbar">
         <nav class="nav" aria-label="Main navigation">
             <a class="brand" href="index.html">
                 <span class="brand-mark">R</span>
@@ -18,8 +23,10 @@
             </a>
             <!-- Dynamic Navigation Links Slot -->
             <div class="nav-links" id="dynamic-nav-links"></div>
+            
             <!-- Dynamic Session Actions Slot -->
             <div class="session-actions" id="dynamic-session-actions"></div>
+            
             <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Open navigation menu">☰</button>
         </nav>
     </header>
@@ -41,37 +48,85 @@
     <div id="home-view">
         <section class="hero">
             <div class="hero-inner">
-                <div class="hero-copy">
+                <div class="hero-copy reveal">
                     <span class="eyebrow" data-hero-eyebrow>Book stays that feel like home</span>
                     <h1 data-hero-title>Find your next perfect stay.</h1>
                     <p data-hero-description>RoomBnB helps travelers browse comfortable homes, compare guest-ready stays, and request bookings with a smooth Airbnb-style experience.</p>
                 </div>
 
-                <form class="search-panel" data-search-form>
-                    <label class="search-field">
-                        <span>Location</span>
-                        <div class="location-input-wrapper">
-                            <input name="location" type="text" placeholder="Where are you going?">
-                            <button type="button" class="geo-btn" id="geo-btn" title="Use current location" aria-label="Use current location">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
-                            </button>
+                <div class="reveal" style="width: 100%;">
+                    <form class="search-panel" data-search-form>
+                        <label class="search-field">
+                            <span>Location</span>
+                            <div class="location-input-wrapper">
+                                <input name="location" type="text" placeholder="Where are you going?">
+                                <button type="button" class="geo-btn" id="geo-btn" title="Use current location" aria-label="Use current location">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+                                </button>
+                            </div>
+                        </label>
+                        <label class="search-field">
+                            <span>Property type</span>
+                            <select name="propertyType" data-property-type-filter></select>
+                        </label>
+                        <label class="search-field">
+                            <span>Guests</span>
+                            <input name="guests" type="number" min="1" placeholder="Add guests">
+                        </label>
+                        <label class="search-field" id="trigger-advanced-filters-btn" style="justify-content:center;">
+                            <span style="text-align:center;">Filters</span>
+                            <div style="font-size:0.85rem; font-weight:800; color:var(--accent); text-align:center;">More Options ⚙️</div>
+                        </label>
+                        <button class="search-button" type="submit">Find stays</button>
+                    </form>
+
+                    <!-- Advanced Filters Drawer -->
+                    <div id="advanced-filters-container" style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px; margin-top:12px; box-shadow:var(--shadow); display:none; flex-direction:column; gap:20px;">
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:20px;">
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                <span style="font-size:0.82rem; font-weight:800; text-transform:uppercase; color:var(--text-muted);">Price Range ($)</span>
+                                <div style="display:flex; gap:10px; align-items:center;">
+                                    <input type="number" name="minPrice" placeholder="Min" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                                    <span>to</span>
+                                    <input type="number" name="maxPrice" placeholder="Max" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                                </div>
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                <span style="font-size:0.82rem; font-weight:800; text-transform:uppercase; color:var(--text-muted);">Trip Dates</span>
+                                <div style="display:flex; gap:10px; align-items:center;">
+                                    <input type="date" name="filterCheckIn" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                                    <span>to</span>
+                                    <input type="date" name="filterCheckOut" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                                </div>
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                <span style="font-size:0.82rem; font-weight:800; text-transform:uppercase; color:var(--text-muted);">Minimum Rating</span>
+                                <select name="minRating" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit; background:var(--surface);">
+                                    <option value="0">Any rating</option>
+                                    <option value="4.0">★ 4.0 & above</option>
+                                    <option value="4.5">★ 4.5 & above</option>
+                                    <option value="4.8">★ 4.8 & above</option>
+                                </select>
+                            </div>
                         </div>
-                    </label>
-                    <label class="search-field">
-                        <span>Property type</span>
-                        <select name="propertyType" data-property-type-filter></select>
-                    </label>
-                    <label class="search-field">
-                        <span>Guests</span>
-                        <input name="guests" type="text" placeholder="Add guests">
-                    </label>
-                    <button class="search-button" type="submit">Find stays</button>
-                </form>
+                        <div style="border-top:1px solid var(--border); padding-top:16px;">
+                            <span style="font-size:0.82rem; font-weight:800; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:10px;">Select Amenities</span>
+                            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:12px;" id="search-amenities-checks">
+                                <label style="display:flex; gap:8px; font-weight:600; font-size:0.9rem; align-items:center; cursor:pointer;"><input type="checkbox" value="High-speed WiFi"> WiFi</label>
+                                <label style="display:flex; gap:8px; font-weight:600; font-size:0.9rem; align-items:center; cursor:pointer;"><input type="checkbox" value="Air conditioning"> Air Conditioning</label>
+                                <label style="display:flex; gap:8px; font-weight:600; font-size:0.9rem; align-items:center; cursor:pointer;"><input type="checkbox" value="Kitchen essentials"> Kitchen</label>
+                                <label style="display:flex; gap:8px; font-weight:600; font-size:0.9rem; align-items:center; cursor:pointer;"><input type="checkbox" value="Pool"> Swimming Pool</label>
+                                <label style="display:flex; gap:8px; font-weight:600; font-size:0.9rem; align-items:center; cursor:pointer;"><input type="checkbox" value="Gym"> Fitness Gym</label>
+                                <label style="display:flex; gap:8px; font-weight:600; font-size:0.9rem; align-items:center; cursor:pointer;"><input type="checkbox" value="Parking"> Free Parking</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
         <!-- Inline registration for guest page (hidden when logged in) -->
-        <section class="section dashboard-section" id="register">
+        <section class="section dashboard-section reveal" id="register">
             <div class="section-heading">
                 <h2>Create an account</h2>
                 <p>Register to start booking your perfect stay.</p>
@@ -84,6 +139,10 @@
                 <label class="register-field">
                     Email
                     <input name="email" type="email" placeholder="Enter your email" required>
+                </label>
+                <label class="register-field">
+                    Phone
+                    <input name="phone" type="tel" placeholder="Enter phone number" required>
                 </label>
                 <label class="register-field">
                     Address
@@ -99,11 +158,11 @@
         </section>
 
         <main>
-            <section class="section">
+            <section class="section reveal">
                 <div class="stats-band" data-stats-list></div>
             </section>
 
-            <section class="section" id="stays">
+            <section class="section reveal" id="stays">
                 <div class="section-heading">
                     <h2 data-properties-heading>Featured stays</h2>
                     <p data-properties-description>Browse curated homes with transparent pricing, reliable hosts, and guest-ready service from check-in to checkout.</p>
@@ -112,7 +171,7 @@
                 <div class="property-grid" data-property-list></div>
             </section>
 
-            <section class="section features" id="services">
+            <section class="section features reveal" id="services">
                 <div class="feature-list" data-service-list></div>
 
                 <div class="owner-panel" id="owners">
@@ -143,20 +202,108 @@
         </div>
     </dialog>
 
+    <!-- HTML5 Dialog Modal: Payment Process Screen -->
+    <dialog id="payment-modal" class="custom-modal" style="width: min(600px, 92vw);">
+        <div class="modal-header">
+            <h2>Complete Secure Booking</h2>
+            <button class="modal-close-btn" data-close-modal="payment-modal">&times;</button>
+        </div>
+        <form id="payment-submit-form">
+            <div class="modal-body">
+                <div style="display:flex; justify-content:space-around; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:12px;">
+                    <label style="display:flex; gap:8px; align-items:center; font-weight:800; cursor:pointer;"><input type="radio" name="payMethod" value="card" checked id="pay-card-radio"> Credit / Debit Card</label>
+                    <label style="display:flex; gap:8px; align-items:center; font-weight:800; cursor:pointer;"><input type="radio" name="payMethod" value="upi" id="pay-upi-radio"> UPI Transfer</label>
+                </div>
+
+                <!-- A. Credit / Debit card visual inputs -->
+                <div id="payment-card-panel">
+                    <div class="card-perspective">
+                        <div class="credit-card-mockup" id="cc-mockup">
+                            <div class="card-face front">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <div class="card-chip"></div>
+                                    <strong style="font-size:1.1rem; font-style:italic; letter-spacing:-0.5px;">SECURE PAY</strong>
+                                </div>
+                                <div class="card-number-label" id="cc-cardnumber-view">•••• •••• •••• ••••</div>
+                                <div class="card-row">
+                                    <div>
+                                        <div class="card-holder-label">Card Holder</div>
+                                        <div class="card-holder-val" id="cc-cardholder-view">JOHN DOE</div>
+                                    </div>
+                                    <div>
+                                        <div class="card-expiry-label">Expires</div>
+                                        <div class="card-expiry-val" id="cc-expiry-view">MM/YY</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-face back">
+                                <div class="card-magnetic-strip"></div>
+                                <div class="card-signature-box"></div>
+                                <div class="card-cvv-box" id="cc-cvv-view">•••</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; gap:14px;">
+                        <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem;">
+                            Cardholder Name
+                            <input type="text" id="cc-name-input" placeholder="e.g. John Doe" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                        </label>
+                        <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem;">
+                            Card Number
+                            <input type="text" id="cc-number-input" placeholder="e.g. 4111 2222 3333 4444" maxlength="19" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                        </label>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                            <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem;">
+                                Expiration (MM/YY)
+                                <input type="text" id="cc-expiry-input" placeholder="e.g. 12/28" maxlength="5" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                            </label>
+                            <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.85rem;">
+                                CVV Code
+                                <input type="password" id="cc-cvv-input" placeholder="e.g. 123" maxlength="3" required style="padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font:inherit;">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- B. UPI Scanning Simulation layout -->
+                <div id="payment-upi-panel" hidden>
+                    <div class="upi-scan-panel">
+                        <div class="qr-code-box">
+                            <svg viewBox="0 0 100 100" width="100%" height="100%"><rect x="10" y="10" width="20" height="20" fill="#000"/><rect x="70" y="10" width="20" height="20" fill="#000"/><rect x="10" y="70" width="20" height="20" fill="#000"/><rect x="35" y="35" width="30" height="30" fill="#000" rx="4"/><rect x="15" y="15" width="10" height="10" fill="#fff"/><rect x="75" y="15" width="10" height="10" fill="#fff"/><rect x="15" y="75" width="10" height="10" fill="#fff"/></svg>
+                        </div>
+                        <p style="font-weight:700; font-size:0.95rem; color:var(--text-muted);">Scan this QR Code using any UPI App (GPay, PhonePe, Paytm)</p>
+                        <div style="font-weight:800; font-size:1.1rem;">OR ENTER UPI ID</div>
+                        <input type="text" id="upi-id-input" placeholder="e.g. traveler@okaxis" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); text-align:center; font:inherit;">
+                    </div>
+                </div>
+
+                <div style="background:var(--secondary-light); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:800;">Amount Payable:</span>
+                    <span style="font-size:1.4rem; font-weight:900; color:var(--accent);" id="payment-payable-amount">$0.00</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="mini-button" data-close-modal="payment-modal">Cancel</button>
+                <button type="submit" class="mini-button" style="background:var(--accent); color:#fff; border-color:var(--accent);">Confirm Payment</button>
+            </div>
+        </form>
+    </dialog>
+
     <!-- HTML5 Drag & Drop Favorites Drawer -->
     <div id="favorites-drawer" class="favorites-drawer">
         <div class="favorites-header" id="favorites-header">
             <div class="favorites-title">
-                <span>Favorites & Compare</span>
+                <span>Stays Comparison</span>
                 <span class="favorites-count" id="favorites-count">0</span>
             </div>
             <button class="favorites-toggle" id="favorites-toggle">Show</button>
         </div>
         <div class="favorites-body">
             <div class="favorites-drop-zone" id="favorites-drop-zone">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-                <strong>Drag Stays Here</strong>
-                <p>Drop a stay to add to favorites</p>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent);"><path d="M12 5v14M5 12h14"/></svg>
+                <strong style="margin-top:6px;">Drag Property Card Here</strong>
+                <p>Drop a stay to add to compare</p>
             </div>
             <div class="favorites-list" id="favorites-list">
                 <!-- Populated dynamically -->
