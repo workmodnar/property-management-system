@@ -222,7 +222,7 @@ app.get('/api/properties', async (req, res) => {
             bookings.forEach(b => {
                 const start = Number(b.checkIn.split("-")[2]);
                 const end = Number(b.checkOut.split("-")[2]);
-                for (let d = start; d <= end; d++) {
+                for (let d = start; d < end; d++) {
                     bookedDates.push(`2026-07-${d < 10 ? '0' + d : d}`);
                 }
             });
@@ -341,6 +341,9 @@ app.get('/api/bookings', async (req, res) => {
 
 app.post('/api/bookings', async (req, res) => {
     const { propertyId, customerId, customerName, hostId, checkIn, checkOut, guestsCount, nights, basePrice, tax, serviceFee, discountApplied, totalPrice, couponCode, paymentMethod } = req.body;
+    if (Number(nights) > 4) {
+        return res.status(400).json({ error: "Booking stays are limited to a maximum of 4 days." });
+    }
     try {
         const id = createId('booking');
         const status = 'Pending';
@@ -574,6 +577,19 @@ app.post('/api/reviews', async (req, res) => {
         await run(`UPDATE properties SET rating = ? WHERE id = ?`, [Number(avg.toFixed(2)), propertyId]);
 
         res.status(201).json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/reviews/user/:reviewerName', async (req, res) => {
+    try {
+        const sql = `SELECT r.*, p.name as propertyName, p.images as propertyImages 
+                     FROM reviews r 
+                     JOIN properties p ON r.propertyId = p.id 
+                     WHERE LOWER(r.reviewerName) = LOWER(?)`;
+        const reviews = await query(sql, [req.params.reviewerName]);
+        res.json(reviews);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

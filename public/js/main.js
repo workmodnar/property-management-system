@@ -312,14 +312,6 @@ window.openPropertyDetailsModal = async function(propertyId) {
                             Guests count
                             <input type="number" id="booking-guests-input" value="1" min="1" max="${property.capacity}" style="padding:10px; border:1px solid var(--border); border-radius:12px; font:inherit;">
                         </label>
-                        <label style="display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:0.82rem;">
-                            Promo Coupon Code
-                            <div style="display:flex; gap:10px;">
-                                <input type="text" id="booking-coupon-input" placeholder="e.g. WELCOME10" style="flex-grow:1; padding:10px; border:1px solid var(--border); border-radius:12px; font:inherit;">
-                                <button type="button" class="mini-button" id="apply-coupon-btn" style="margin:0;">Apply</button>
-                            </div>
-                            <span id="coupon-calc-pill-box" style="margin-top:6px;"></span>
-                        </label>
                     </div>
 
                     <div style="display:flex; flex-direction:column; gap:8px; border-top:1px solid var(--border); padding-top:16px; margin-top:16px;">
@@ -334,10 +326,6 @@ window.openPropertyDetailsModal = async function(propertyId) {
                         <div class="booking-calc-row">
                             <span>5% Flat Service Fee</span>
                             <span id="calc-fee-val">$0</span>
-                        </div>
-                        <div class="booking-calc-row" id="calc-discount-row" style="display:none; color:var(--success);">
-                            <span>Coupon Discount</span>
-                            <span id="calc-discount-val">-$0</span>
                         </div>
                         <div class="booking-calc-row total">
                             <span>Total Payable</span>
@@ -411,6 +399,13 @@ window.openPropertyDetailsModal = async function(propertyId) {
             document.getElementById("confirm-booking-details-btn").onclick = () => {
                 if (!window.bookingCheckIn || !window.bookingCheckOut) {
                     RoomBnbAPI.showToast("Please choose check-in and check-out dates on the calendar.", "error");
+                    return;
+                }
+                const startDay = Number(window.bookingCheckIn.split("-")[2]);
+                const endDay = Number(window.bookingCheckOut.split("-")[2]);
+                const nights = endDay - startDay;
+                if (nights > 4) {
+                    RoomBnbAPI.showToast("You can only book a stay for a maximum of 4 days.", "error");
                     return;
                 }
                 modal.close();
@@ -522,38 +517,13 @@ window.recalculateBookingBill = function() {
     const tax = Math.round(baseTotal * 0.1);
     const serviceFee = Math.round(baseTotal * 0.05);
 
-    const couponInput = document.getElementById("booking-coupon-input");
-    const code = couponInput ? couponInput.value.toUpperCase().trim() : "";
-    let discount = 0;
-
-    if (code && window.appConfig.coupons) {
-        const coupon = window.appConfig.coupons.find(c => c.code === code);
-        if (coupon) {
-            if (coupon.discountType === "percent") {
-                discount = Math.round(baseTotal * (coupon.value / 100));
-            } else if (coupon.discountType === "flat") {
-                discount = Math.min(coupon.value, baseTotal);
-            }
-        }
-    }
-
-    const grandTotal = Math.max(0, baseTotal + tax + serviceFee - discount);
+    const grandTotal = Math.max(0, baseTotal + tax + serviceFee);
 
     window.setText("#calc-base-label", `$${price} x ${nights} night${nights !== 1 ? 's' : ''}`);
     window.setText("#calc-base-val", `$${baseTotal}`);
     window.setText("#calc-tax-val", `$${tax}`);
     window.setText("#calc-fee-val", `$${serviceFee}`);
     window.setText("#calc-total-val", `$${grandTotal}`);
-
-    const discRow = document.getElementById("calc-discount-row");
-    if (discRow) {
-        if (discount > 0) {
-            discRow.style.display = "flex";
-            window.setText("#calc-discount-val", `-$${discount}`);
-        } else {
-            discRow.style.display = "none";
-        }
-    }
 };
 
 /* ==========================================
@@ -683,16 +653,7 @@ window.processBookingPayment = function(event) {
             const tax = Math.round(basePrice * 0.1);
             const serviceFee = Math.round(basePrice * 0.05);
 
-            const couponVal = document.getElementById("booking-coupon-input")?.value.toUpperCase().trim() || "";
-            let discountApplied = 0;
-            if (couponVal && window.appConfig.coupons) {
-                const coupon = window.appConfig.coupons.find(c => c.code === couponVal);
-                if (coupon) {
-                    discountApplied = (coupon.discountType === "percent") ? Math.round(basePrice * (coupon.value / 100)) : Math.min(coupon.value, basePrice);
-                }
-            }
-
-            const totalPrice = basePrice + tax + serviceFee - discountApplied;
+            const totalPrice = basePrice + tax + serviceFee;
             const payMethod = document.querySelector('input[name="payMethod"]:checked').value;
 
             // Submit booking request
@@ -708,9 +669,9 @@ window.processBookingPayment = function(event) {
                 basePrice,
                 tax,
                 serviceFee,
-                discountApplied,
+                discountApplied: 0,
                 totalPrice,
-                couponCode: couponVal,
+                couponCode: "",
                 paymentMethod: payMethod.toUpperCase()
             });
 
